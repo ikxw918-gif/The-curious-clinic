@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>The Curious Clinic</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background: #f6eae0;
+        color: #332c29;
+        min-height: 100vh;
+    }
+
+    header {
+        background: #fffaf6;
+        padding: 22px;
+        text-align: center;
+        border-bottom: 2px solid #ead8cc;
+    }
+
+    header h1 {
+        font-size: 30px;
+        margin-bottom: 6px;
+    }
+
+    header p {
+        color: #766963;
+        font-size: 15px;
+    }
+
+    .container {
+        max-width: 850px;
+        margin: 35px auto;
+        padding: 20px;
+    }
+
+    .screen {
+        display: none;
+    }
+
+    .active {
+        display: block;
+    }
+
+    .welcome {
+        text-align: center;
+        background: #fffaf6;
+        padding: 45px 30px;
+        border-radius: 24px;
+        box-shadow: 0 8px 25px rgba(80,50,40,0.08);
+    }
+
+    .welcome .icon {
+        font-size: 65px;
+        margin-bottom: 15px;
+    }
+
+    h2 {
+        font-size: 28px;
+        margin-bottom: 12px;
+    }
+
+    .welcome p {
+        color: #6f625d;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    button {
+        border: none;
+        background: #8d6e63;
+        color: white;
+        padding: 14px 24px;
+        border-radius: 12px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        background: #755950;
+    }
+
+    .case-card {
+        background: #fffaf6;
+        padding: 30px;
+        border-radius: 22px;
+        box-shadow: 0 8px 25px rgba(80,50,40,0.08);
+    }
+
+    .case-number {
+        color: #9a776a;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .case-title {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    .patient {
+        background: #f1e2d8;
+        padding: 18px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+        line-height: 1.7;
+    }
+
+    .question {
+        font-size: 19px;
+        font-weight: bold;
+        margin: 25px 0 15px;
+    }
+
+    .choices {
+        display: grid;
+        gap: 12px;
+    }
+
+    .choice {
+        width: 100%;
+        background: white;
+        color: #332c29;
+        border: 2px solid #e4d5cc;
+        text-align: left;
+    }
+
+    .choice:hover {
+        background: #f7eee9;
+        border-color: #9a776a;
+    }
+
+    .result {
+        margin-top: 20px;
+        padding: 18px;
+        border-radius: 14px;
+        display: none;
+        line-height: 1.6;
+    }
+
+    .correct {
+        background: #e4f0e4;
+        color: #38543b;
+    }
+
+    .incorrect {
+        background: #f4dddd;
+        color: #703d3d;
+    }
+
+    .next {
+        margin-top: 15px;
+        display: none;
+    }
+
+    .progress {
+        height: 8px;
+        background: #eadbd3;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        width: 33%;
+        background: #8d6e63;
+        transition: 0.3s;
+    }
+
+    .final {
+        text-align: center;
+        background: #fffaf6;
+        padding: 40px 25px;
+        border-radius: 24px;
+        box-shadow: 0 8px 25px rgba(80,50,40,0.08);
+    }
+
+    .score {
+        font-size: 50px;
+        font-weight: bold;
+        margin: 20px;
+        color: #8d6e63;
+    }
+
+    .explanation {
+        text-align: left;
+        background: #f5e9e2;
+        padding: 20px;
+        border-radius: 15px;
+        margin: 20px 0;
+        line-height: 1.7;
+    }
+
+    footer {
+        text-align: center;
+        padding: 30px;
+        color: #86766e;
+        font-size: 14px;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🩺 The Curious Clinic</h1>
+    <p>Step into the clinic. Solve the case. Learn the science.</p>
+</header>
+
+<div class="container">
+
+    <!-- WELCOME -->
+    <section id="welcome" class="screen active">
+        <div class="welcome">
+            <div class="icon">🩺</div>
+
+            <h2>Welcome to the Clinic</h2>
+
+            <p>
+                Think like a doctor. Read the symptoms, examine the clues,
+                and choose the most likely diagnosis.
+            </p>
+
+            <button onclick="startCases()">Start the Cases →</button>
+        </div>
+    </section>
+
+
+    <!-- CASE -->
+    <section id="caseScreen" class="screen">
+
+        <div class="progress">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div class="case-card">
+
+            <div id="caseNumber" class="case-number">
+                CASE 1 OF 3
+            </div>
+
+            <h2 id="caseTitle" class="case-title"></h2>
+
+            <div id="patientInfo" class="patient"></div>
+
+            <div class="question">
+                What is the most likely diagnosis?
+            </div>
+
+            <div id="choices" class="choices"></div>
+
+            <div id="result" class="result"></div>
+
+            <button id="nextButton" class="next" onclick="nextCase()">
+                Next Case →
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- FINAL -->
+    <section id="finalScreen" class="screen">
+
+        <div class="final">
+
+            <div style="font-size:60px;">🏥</div>
+
+            <h2>Clinic Complete!</h2>
+
+            <p>You made it through all three cases.</p>
+
+            <div id="score" class="score"></div>
+
+            <div id="finalMessage"></div>
+
+            <div class="explanation">
+                <strong>Remember:</strong><br><br>
+
+                These cases are designed for educational purposes.
+                Real clinical diagnosis requires a complete history,
+                physical examination, investigations, and assessment
+                by a qualified healthcare professional.
+            </div>
+
+            <button onclick="restart()">Try Again</button>
+
+        </div>
+
+    </section>
+
+</div>
+
+<footer>
+    🩺 The Curious Clinic · Learn something curious every week
+</footer>
+
+
+<script>
+
+const cases = [
+
+    {
+        title: "The Sudden Stomach Pain",
+
+        patient:
+        "<strong>Patient:</strong> 16-year-old male<br>" +
+        "<strong>Complaint:</strong> Severe abdominal pain<br>" +
+        "<strong>History:</strong> The pain started around his belly button " +
+        "and later moved to the lower right side. He feels nauseous and " +
+        "has a mild fever.",
+
+        choices: [
+            "Appendicitis",
+            "Gastritis",
+            "Kidney stone",
+            "Food poisoning"
+        ],
+
+        answer: 0,
+
+        explanation:
+        "<strong>Correct — Appendicitis.</strong><br><br>" +
+        "A classic pattern is pain that begins around the umbilicus " +
+        "and then moves to the right lower quadrant. Nausea and fever " +
+        "can also occur."
+    },
+
+    {
+        title: "The Racing Heart",
+
+        patient:
+        "<strong>Patient:</strong> 17-year-old female<br>" +
+        "<strong>Complaint:</strong> Heart racing and feeling shaky<br>" +
+        "<strong>History:</strong> She suddenly develops a fast heartbeat " +
+        "while sitting in class. She feels dizzy and says her heart is " +
+        "beating very quickly.",
+
+        choices: [
+            "Pneumonia",
+            "Tachyarrhythmia",
+            "Appendicitis",
+            "Migraine"
+        ],
+
+        answer: 1,
+
+        explanation:
+        "<strong>Correct — Tachyarrhythmia.</strong><br><br>" +
+        "A tachyarrhythmia is an abnormally fast heart rhythm. " +
+        "Sudden palpitations with dizziness can be an important clue."
+    },
+
+    {
+        title: "The Mysterious Rash",
+
+        patient:
+        "<strong>Patient:</strong> 15-year-old male<br>" +
+        "<strong>Complaint:</strong> Fever and rash<br>" +
+        "<strong>History:</strong> He has had a high fever for two days. " +
+        "Today, a red rash appears on his torso and spreads toward " +
+        "his arms. He also complains of a sore throat.",
+
+        choices: [
+            "Scarlet fever",
+            "Appendicitis",
+            "Asthma",
+            "Type 1 diabetes"
+        ],
+
+        answer: 0,
+
+        explanation:
+        "<strong>Correct — Scarlet fever.</strong><br><br>" +
+        "Scarlet fever is associated with group A Streptococcus infection. " +
+        "It can cause fever, sore throat and a characteristic red rash."
+    }
+
+];
+
+
+let currentCase = 0;
+let score = 0;
+let answered = false;
+
+
+function startCases() {
+
+    currentCase = 0;
+    score = 0;
+
+    document.getElementById("welcome").classList.remove("active");
+    document.getElementById("finalScreen").classList.remove("active");
+    document.getElementById("caseScreen").classList.add("active");
+
+    loadCase();
+
+}
+
+
+function loadCase() {
+
+    answered = false;
+
+    const c = cases[currentCase];
+
+    document.getElementById("caseNumber").textContent =
+        `CASE ${currentCase + 1} OF ${cases.length}`;
+
+    document.getElementById("caseTitle").textContent = c.title;
+
+    document.getElementById("patientInfo").innerHTML =
+        c.patient;
+
+    const choices = document.getElementById("choices");
+
+    choices.innerHTML = "";
+
+    c.choices.forEach((choice, index) => {
+
+        const button = document.createElement("button");
+
+        button.className = "choice";
+
+        button.textContent = choice;
+
+        button.onclick = () => chooseAnswer(index);
+
+        choices.appendChild(button);
+
+    });
+
+
+    const result = document.getElementById("result");
+
+    result.style.display = "none";
+
+    result.className = "result";
+
+    document.getElementById("nextButton").style.display = "none";
+
+
+    const progress =
+        ((currentCase + 1) / cases.length) * 100;
+
+    document.getElementById("progressBar").style.width =
+        progress + "%";
+
+}
+
+
+function chooseAnswer(index) {
+
+    if (answered) return;
+
+    answered = true;
+
+    const c = cases[currentCase];
+
+    const result = document.getElementById("result");
+
+    const buttons =
+        document.querySelectorAll(".choice");
+
+
+    buttons.forEach(button => {
+
+        button.disabled = true;
+
+    });
+
+
+    if (index === c.answer) {
+
+        score++;
+
+        result.classList.add("correct");
+
+        result.innerHTML =
+            "✅ " + c.explanation;
+
+    } else {
+
+        result.classList.add("incorrect");
+
+        result.innerHTML =
+            "❌ Not quite.<br><br>" +
+            "<strong>The correct answer is:</strong> " +
+            c.choices[c.answer] +
+            "<br><br>" +
+            c.explanation;
+
+    }
+
+
+    result.style.display = "block";
+
+
+    document.getElementById("nextButton").style.display =
+        "inline-block";
+
+}
+
+
+function nextCase() {
+
+    currentCase++;
+
+    if (currentCase >= cases.length) {
+
+        showFinal();
+
+    } else {
+
+        loadCase();
+
+    }
+
+}
+
+
+function showFinal() {
+
+    document.getElementById("caseScreen")
+        .classList.remove("active");
+
+    document.getElementById("finalScreen")
+        .classList.add("active");
+
+
+    document.getElementById("score").textContent =
+        `${score} / ${cases.length}`;
+
+
+    let message;
+
+
+    if (score === 3) {
+
+        message =
+            "<h3>🧠 Excellent!</h3>" +
+            "<p>You solved every case.</p>";
+
+    } else if (score === 2) {
+
+        message =
+            "<h3>🩺 Great job!</h3>" +
+            "<p>You were very close to a perfect score.</p>";
+
+    } else if (score === 1) {
+
+        message =
+            "<h3>🔎 Keep investigating!</h3>" +
+            "<p>Every case is another chance to learn.</p>";
+
+    } else {
+
+        message =
+            "<h3>🧪 Time for another round!</h3>" +
+            "<p>Don't worry — that's what learning is for.</p>";
+
+    }
+
+
+    document.getElementById("finalMessage").innerHTML =
+        message;
+
+}
+
+
+function restart() {
+
+    document.getElementById("finalScreen")
+        .classList.remove("active");
+
+    document.getElementById("welcome")
+        .classList.add("active");
+
+}
+
+</script>
+
+</body>
+</html>
